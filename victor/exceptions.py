@@ -8,5 +8,9 @@ class FieldTypeConversionError(Exception):
 	pass
 
 
+class FieldRequiredError(Exception):
+    pass
+
+
 class VectorInputTypeError(Exception):
 	pass

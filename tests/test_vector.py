@@ -5,6 +5,7 @@ import unittest
 from victor.exceptions import (
     FieldValidationException,
     FieldTypeConversionError,
+    FieldRequiredError,
     VectorInputTypeError
 )
 
@@ -38,7 +39,7 @@ class VectorTestCase(unittest.TestCase):
         ListField(int)
 
     def test_list_field_data(self):
-    	field = ListField(CharField(), strict=True)
+        field = ListField(CharField(), strict=True)
 
         data = ('test',)
 
@@ -58,25 +59,28 @@ class VectorTestCase(unittest.TestCase):
         field_str = StringField()
         field_str.set_data(10)
 
-        assert isinstance(field_str.data, str), 'Data should have been cast to a string'
+        assert isinstance(field_str.data, str),\
+            'Data should have been cast to a string'
 
         field_int = IntField()
         field_int.set_data('hello')
 
-        assert isinstance(field_int.data, int), 'Data should have been cast to an integer'
+        assert isinstance(field_int.data, int),\
+            'Data should have been cast to an integer'
         assert field_int.data == 0
 
         field_float = FloatField()
         field_float.set_data('hello')
 
-        assert isinstance(field_float.data, float), 'Data should have been cast to an integer'
+        assert isinstance(field_float.data, float),\
+            'Data should have been cast to an integer'
         assert field_float.data == 0
 
     @raises(FieldTypeConversionError)
     def test_int_field_bad_cast(self):
         #
         # Trying to pass a string to an IntField in non strict mode
-        # will try to cast to int and should yield an error when 
+        # will try to cast to int and should yield an error when
         # missing value is bad.
         field_int = IntField(missing_value=False)
         field_int.set_data('hello')
@@ -84,8 +88,8 @@ class VectorTestCase(unittest.TestCase):
     @raises(FieldTypeConversionError)
     def test_float_field_bad_cast(self):
         #
-        # Trying to pass a string to an IntField in non strict mode
-        # will try to cast to int and should yield an error when 
+        # Trying to pass a string to an FloatField in non strict mode
+        # will try to cast to int and should yield an error when
         # missing value is bad.
         field_float = FloatField(missing_value=False)
         field_float.set_data('hello')
@@ -95,13 +99,34 @@ class VectorTestCase(unittest.TestCase):
         vector = Vector()
         vector('bad input')
 
-    def test_vector_required_fields(self):
+    @raises(FieldRequiredError)
+    def test_vector_missing_fields(self):
         class RequiredVector(Vector):
             name = StringField(required=True)
-            age = IntField(required=True)
 
         vector = RequiredVector()
-
         data = {}
-
         vector(data)
+
+    def test_vector_input_mapping(self):
+        vector = Vector()
+        data = {
+            'name': 'Bob',
+            'age': 30
+        }
+        vector(data)
+
+        assert hasattr(vector, 'name'), 'Name field not mapped on vector'
+        assert hasattr(vector, 'age'), 'Age field not mapped on vector'
+        assert vector.name == 'Bob', 'Name field not set'
+        assert vector.age == 30, 'Age field not set'
+
+    def test_vector_nested_validation(self):
+        class DummyVector(Vector):
+            number = IntField(missing_value=False)
+
+        vector = DummyVector()
+        data = {
+            'number': 'not a number'
+        }
+        print vector(data)

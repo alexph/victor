@@ -1,6 +1,7 @@
 from victor.exceptions import (
     FieldValidationException,
     FieldTypeConversionError,
+    FieldRequiredError,
     VectorInputTypeError
 )
 
@@ -33,7 +34,9 @@ class Field(object):
     def set_data(self, value):
         if self.strict:
             if not self._validate(value):
-                raise FieldValidationException('%s does not except this value' % self.__class__.__name__)
+                raise FieldValidationException('%s does not '
+                                               'except this value'
+                                               % self.__class__.__name__)
         elif self.cast_cls is not None:
             value = self._cast_type(value)
 
@@ -69,7 +72,9 @@ class IntField(Field):
             return self.cast_cls(value)
         except ValueError, exc:
             if self.missing_value is False:
-                raise FieldTypeConversionError('Could not convert data or use missing_value: %s' % exc)
+                raise FieldTypeConversionError('Could not convert '
+                                               'data or use missing_value: %s'
+                                               % exc)
 
         return self.missing_value
 
@@ -92,7 +97,8 @@ class ListField(Field):
 
     def _validate(self, value):
         if not isinstance(value, (list, tuple)):
-            raise FieldValidationException('ListField requires data to be a sequence type')
+            raise FieldValidationException('ListField requires data '
+                                           'to be a sequence type')
 
         for x in value:
             self.cls.set_data(value)
@@ -104,6 +110,7 @@ class ListField(Field):
 
 class Vector(object):
     def __init__(self):
+        self.input_data = {}
         self._fields = {}
         self._required = []
 
@@ -115,7 +122,8 @@ class Vector(object):
     def input(self, data):
         if not isinstance(data, dict):
             raise VectorInputTypeError('Vector input not a dictionary')
-        self._validate()
+        self._validate(data)
+        self._map_attrs(data)
 
     def _setup_fields(self):
         self._fields = {}
@@ -134,8 +142,22 @@ class Vector(object):
         for f in self.get_fields():
             setattr(self, f, None)
 
-    def _validate(self):
-        pass
+    def _validate(self, input_data):
+        for f in self._required:
+            if f not in input_data:
+                raise FieldRequiredError('Missing field %s is a required field'
+                                         % f)
+
+        for k, v in input_data.iteritems():
+            if k in self.get_fields():
+                f = self.get_field(k)
+                f.set_data(v)
+
+    def _map_attrs(self, input_data):
+        self.input_data = input_data
+
+        for k, v in self.input_data.iteritems():
+            setattr(self, k, v)
 
     def get_fields(self):
         return self._fields
