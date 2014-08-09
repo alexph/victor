@@ -112,6 +112,7 @@ class Vector(object):
     def __init__(self):
         self.input_data = {}
         self._fields = {}
+        self._map = {}
         self._required = []
 
         self._setup_fields()
@@ -123,8 +124,11 @@ class Vector(object):
         return self.input(data)
 
     def input(self, data):
+        self._map = {}
+
         if not isinstance(data, dict):
             raise VectorInputTypeError('Vector input not a dictionary')
+
         self._validate(data)
         self._map_attrs(data)
 
@@ -160,6 +164,14 @@ class Vector(object):
         self.input_data = input_data
 
         for k, v in self.input_data.iteritems():
+            if k in self.get_fields():
+                # setattr(self, k, self.get_field(k).data)
+                self._map[k] = self.get_field(k).data
+            else:
+                # setattr(self, k, v)
+                self._map[k] = v
+
+        for k, v in self._map.iteritems():
             setattr(self, k, v)
 
     def get_fields(self):
@@ -167,3 +179,7 @@ class Vector(object):
 
     def get_field(self, name):
         return self._fields[name]
+
+    @property
+    def data(self):
+        return self._map
