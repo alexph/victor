@@ -116,6 +116,9 @@ class Vector(object):
 
         self._setup_fields()
 
+    def get_name(self):
+        return self.__class__.__name__
+
     def __call__(self, data):
         return self.input(data)
 
