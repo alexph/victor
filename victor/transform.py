@@ -22,6 +22,8 @@ class Transformer(object):
         return self.__class__.__name__
 
     def push_data(self, input_data):
+        self.on_input(input_data)
+
         #
         # Pass through input vector
         self._pass_input_vector(input_data)
@@ -29,6 +31,10 @@ class Transformer(object):
         #
         # Post validation input data
         self._data = self.input_vector.data.copy()
+
+        #
+        # Post data hook
+        self.on_post_input(self._data)
         
         #
         # Run through transformer
@@ -39,9 +45,13 @@ class Transformer(object):
         # Pass through output vector
         self._pass_output_vector(self._data)
 
+        output_data = self.output_vector.data.copy()
+
+        self.on_output(output_data)
+
         #
         # Get output data
-        self._output_data = self.output_vector.data
+        self._output_data = output_data
 
     def _pass_input_vector(self, input_data):
         self.input_vector(input_data)
@@ -56,6 +66,15 @@ class Transformer(object):
             functor = getattr(self, attr_name)
             return functor(value, self._data)
         return value
+
+    def on_input(self, data):
+        pass
+
+    def on_post_input(self, data):
+        pass
+
+    def on_output(self, data):
+        pass
 
     @property
     def output(self):
