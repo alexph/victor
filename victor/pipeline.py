@@ -1,4 +1,5 @@
 from victor.transport import MemoryTransport
+from victor.logger import logger
 
 from Queue import Queue
 
@@ -50,6 +51,8 @@ class Message(object):
 
 class BasePipeline(object):
     def __init__(self, wf):
+        logger.info('%s starting' % self.__class__.__name__)
+
         self.wf = wf
         self.queue = Queue()
         self.transport = MemoryTransport(wf, self.queue)
@@ -64,14 +67,21 @@ class LocalPipeline(BasePipeline):
             msg = self._create_msg('root', item)
 
             self.transport.send(msg)
-
-        self._work()
+            self._work()
 
     def _create_msg(self, sender, payload):
         msg = Message()
         msg.set_sender(sender)
         msg.set_payload(payload)
         msg.set_receivers(self.wf.get_outputs(sender))
+
+
+        logger.info('%s sends a message => %s' % (
+            sender,
+            ', '.join(self.wf.get_outputs(sender)))
+        )
+
+        logger.debug(payload)
 
         return msg
 
@@ -81,6 +91,7 @@ class LocalPipeline(BasePipeline):
 
     def _work(self):
         while not self.queue.empty():
+            logger.info('Got message on %s loopback' % self.__class__.__name__)
             #
             # Retreive from fake queue
             msg = self.queue.get()
@@ -101,5 +112,7 @@ class LocalPipeline(BasePipeline):
 
                 if msg.get_receivers():
                     self.transport.send(msg)
+                else:
+                    logger.warning('Message was blackholed (nobody wants it)')
 
             self._work()

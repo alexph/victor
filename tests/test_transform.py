@@ -37,11 +37,11 @@ class TransformerTestCase(unittest.TestCase):
     @raises(AssertionError)
     def test_transformer_output_cls(self):
         """
-        Test missing input vector throws exception.
+        Test missing output vector throws exception.
 
         """
         class OutputTransformer(Transformer):
-            pass
+            input_vector = Vector()
 
         OutputTransformer()
 

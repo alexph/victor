@@ -1,9 +1,13 @@
+from victor.logger import logger
+
 class Context(object):
     pass
 
 
 class BaseTransport(object):
     def __init__(self, wf, queue):
+        logger.info('%s started' % self.__class__.__name__)
+
         self.wf = wf
         self.queue = queue
 
@@ -16,9 +20,11 @@ class BaseTransport(object):
 
 class MemoryTransport(BaseTransport):
     def send(self, msg):
+        logger.info('MemoryTransport sending message')
         self.recv(msg)
 
     def recv(self, msg):
+        logger.info('MemoryTransport receiving message')
         self.queue.put(msg)
 
 
