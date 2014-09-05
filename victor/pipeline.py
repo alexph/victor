@@ -75,7 +75,6 @@ class LocalPipeline(BasePipeline):
         msg.set_payload(payload)
         msg.set_receivers(self.wf.get_outputs(sender))
 
-
         logger.info('%s sends a message => %s' % (
             sender,
             ', '.join(self.wf.get_outputs(sender)))

@@ -1,9 +1,17 @@
-from victor.command import parser as args, Victor
-from victor.managers import WorkflowManager
+from victor.command import parser as args, VictorCommand
+from victor.core import Victor
+from victor.manager import Context, WorkflowManager
 from victor.workflow import Workflow
 
+import gevent.monkey
 
-__all__ = ['Victor', 'args', 'workflow_manager', 'Workflow']
+gevent.monkey.patch_all()
+
+
+__all__ = ['Victor', 'args', 'workflow_manager', 'Workflow', 'app_context',\
+           'VictorCommand']
 
 
 workflow_manager = WorkflowManager()
+
+app_context = Context()

@@ -1,6 +1,13 @@
 from collections import defaultdict
 
 
+class Context(object):
+    in_process = False
+    children = 4
+    workflows = []
+    components = []
+
+
 class WorkflowManager(object):
     workflows = {}
     components = defaultdict(dict)

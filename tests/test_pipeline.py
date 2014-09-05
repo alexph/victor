@@ -30,9 +30,6 @@ class TestPipeline(unittest.TestCase):
         data = [{'nothing': 0}, {'nothing': 1}, {'nothing': 2},\
                 {'nothing': 3}, {'nothing': 4}]
 
-        def dummy_generator():
-            return data
-
-        pl.start(dummy_generator)
+        pl.start(lambda: data)
 
         assert data == tf.captured_data, 'Data in not matching data out'

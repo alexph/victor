@@ -1,8 +1,5 @@
 from victor.logger import logger
 
-class Context(object):
-    pass
-
 
 class BaseTransport(object):
     def __init__(self, wf, queue):
