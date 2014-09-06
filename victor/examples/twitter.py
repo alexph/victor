@@ -1,12 +1,10 @@
 from victor import Victor, Workflow
-
+from victor.contrib.readers import BeanstalkReader
 
 workflow = Workflow()
 
-def read_stream():
-    for i in range(100):
-        yield i
+beanstalk = BeanstalkReader()
 
 app = Victor()
-app.set_import(read_stream)
+app.set_import(beanstalk)
 app.register(workflow)

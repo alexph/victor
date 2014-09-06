@@ -1,5 +1,6 @@
 from victor.vector import Vector
 
+
 class Transformer(object):
     input_vector = None
     output_vector = None

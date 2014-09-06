@@ -1,3 +1,4 @@
+from victor.injestion import ReaderBase
 from victor.logger import logger
 
 from gevent.queue import Queue
@@ -45,6 +46,7 @@ class GEventScheduler(Scheduler):
 
         while True:
             for x in iter_func():
+                logger.debug(x)
                 self.queue.put(x)
 
     def start(self):
@@ -100,8 +102,13 @@ class MultiProcessWorkerStrategy(object):
     def import_loop(self, import_func, in_queue):
         logger.debug('Import loop starting')
 
+        if isinstance(import_func, ReaderBase):
+            functor = import_func.read
+        else:
+            functor = import_func
+
         while True:
-            for x in import_func():
+            for x in functor():
                 in_queue.put_nowait(x)
                 time.sleep(0)
 

@@ -1,6 +1,7 @@
 .DS_Store
 .idea/
 *.sublime*
+spike
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
