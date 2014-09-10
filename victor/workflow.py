@@ -21,6 +21,9 @@ class Workflow(object):
             output_name = 'root'
         self.flow_map[output_name].append(input_name)
 
+    def get_transformers(self):
+        return self.transformers
+
     def get_transformer(self, name):
         return self.transformers[name]
 

@@ -2,7 +2,7 @@ from victor.logger import logger
 
 
 class BaseTransport(object):
-    def __init__(self, wf, queue):
+    def __init__(self, wf, queue, loopback):
         logger.info('%s started' % self.__class__.__name__)
 
         self.wf = wf
@@ -25,7 +25,5 @@ class MemoryTransport(BaseTransport):
         self.queue.put(msg)
 
 
-class Worker(object):
-    def __init__(self, wf, transport):
-        self.wf = wf
-        self.transport = transport
+class GEventQueueTransport(BaseTransport):
+    pass

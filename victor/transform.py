@@ -80,3 +80,15 @@ class Transformer(object):
     @property
     def output(self):
         return self._output_data
+
+
+class PassiveTransformer(Transformer):
+    input_vector = Vector()
+    output_vector = Vector()
+
+    def __init__(self, name):
+        super(PassiveTransformer, self).__init__()
+        self.name = name
+
+    def get_name(self):
+        return self.name

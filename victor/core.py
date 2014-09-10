@@ -22,5 +22,7 @@ class Victor(object):
         #     self.scheduler.stop()
         assert self.import_func is not None, 'App Import cannot be None'
 
+        app_context.workflows.extend(self.workflows)
+
         strategy = MultiProcessWorkerStrategy(self.import_func, app_context)
         strategy.start()

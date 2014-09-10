@@ -50,18 +50,22 @@ class Message(object):
 
 
 class BasePipeline(object):
-    def __init__(self, wf):
+    def __init__(self, wf, tf=None, transport=None):
         logger.info('%s starting' % self.__class__.__name__)
 
         self.wf = wf
         self.queue = Queue()
-        self.transport = MemoryTransport(wf, self.queue)
+        self.transport = transport
 
     def start(self, iter_generator):
         raise NotImplementedError()
 
 
 class LocalPipeline(BasePipeline):
+    def __init__(self, wf, tf=None, transport=None):
+        super(LocalPipeline, self).__init__(wf, tf, transport)
+        self.transport = MemoryTransport(wf, self.queue, None)
+
     def start(self, iter_generator):
         for item in iter_generator():
             msg = self._create_msg('root', item)
@@ -115,3 +119,7 @@ class LocalPipeline(BasePipeline):
                     logger.warning('Message was blackholed (nobody wants it)')
 
             self._work()
+
+
+class GEventPipeline(BasePipeline):
+    pass

@@ -1,11 +1,16 @@
+from victor.pipeline import GEventPipeline
+from victor.transport import GEventQueueTransport
 from collections import defaultdict
 
 
 class Context(object):
     in_process = False
     children = 4
+    multiplier = 4
     workflows = []
     components = []
+    pipeline_class = GEventPipeline
+    transport_class = GEventQueueTransport
 
 
 class WorkflowManager(object):

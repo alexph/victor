@@ -12,7 +12,7 @@ class TestTransport(unittest.TestCase):
         
         queue = Queue()
         wf = Workflow()
-        tp = MemoryTransport(wf, queue)
+        tp = MemoryTransport(wf, queue, None)
 
         msg = Message()
 
